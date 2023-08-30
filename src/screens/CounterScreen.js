@@ -1,19 +1,36 @@
-import React, {useState} from "react";
+import React, {useReducer} from "react";
 import {View, Text, StyleSheet, Button, Pressable} from "react-native";
 
+const reducer = (state, action) => {
+    // state === { count: number }
+    // action === { type: 'increase' || 'decrease', payload: 1 }
+    
+    switch (action.type) {
+        case 'increase': 
+        // leaving ...count to future proof incase eventually more items are added to the object
+            return { ...state, count: state.count + action.payload }
+        case 'decrease':
+            return { ...state, count: state.count - action.payload }
+        case 'reset':
+            return { ...state, count: 0}
+        default:
+            return state;
+    }
+}
+
 const CounterScreen = () => {
-    const [counter, setCounter] = useState(0);
+    const [state, dispatch] = useReducer(reducer, { count: 0 });
 
     return (
         <View>
-            <Pressable style={styles.button} onPress={() => {setCounter( counter + 1);}}>
+            <Pressable style={styles.button} onPress={() => dispatch( {type: 'increase', payload: 1} )}>
                 <Text style={styles.button.text}>Increase</Text>
             </Pressable>
-            <Pressable style={styles.button} onPress={() => {setCounter( counter - 1);}}>
+            <Pressable style={styles.button} onPress={() => dispatch({type: 'decrease', payload: 1} )}>
                 <Text style={styles.button.text}>Decrease</Text>
             </Pressable>
-            <Text style={styles.text}>Current Count: {counter}</Text>
-            <Pressable  onPress={() => {setCounter(0)}}>
+            <Text style={styles.text}>Current Count: {state.count}</Text>
+            <Pressable  onPress={() => dispatch({ type: 'reset' })}>
                 <Text style={styles.button.reset}>Reset</Text>
             </Pressable>
         </View>
